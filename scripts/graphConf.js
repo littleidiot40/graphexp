@@ -7,13 +7,13 @@ const host = false;
 
 // For implementations like Neptune where only single commands are allowed per request
 // set to true
-const SINGLE_COMMANDS_AND_NO_VARS = false;
+const SINGLE_COMMANDS_AND_NO_VARS = true;
 // For implementations like Neptune where communication only over https is allowed
 // set to true
 const REST_USE_HTTPS = false;
 
 // Time out for the REST protocol. Increase it if the graphDB is slow.
-const REST_TIMEOUT = 2000 
+const REST_TIMEOUT = 200000
 // TODO: configuration for the secure server
 
 // limit number of nodes and edges to query for graph info

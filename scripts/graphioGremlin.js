@@ -131,7 +131,7 @@ var graphioGremlin = (function(){
 			console.log('Warning: no node limit set for the query. The query may fail if the graph is too big.')
         }
 		gremlin_query_nodes += ".toList();";
-		
+
 		let gremlin_query_edges = "edges = " + traversal_source + ".V(nodes).aggregate('node').outE().as('edge').inV().where(within('node')).select('edge').toList();";
         let gremlin_query_edges_no_vars = "edges = " + traversal_source + ".V()"+has_str+".aggregate('node').outE().as('edge').inV().where(within('node')).select('edge').toList();";
         //let gremlin_query_edges_no_vars = "edges = " + traversal_source + ".V()"+has_str+".bothE();";
@@ -178,7 +178,7 @@ var graphioGremlin = (function(){
 		// Gremlin query
 		var gremlin_query_nodes = 'nodes = ' + traversal_source + '.V('+id+').as("node").both('+(edge_filter?'"'+edge_filter+'"':'')+').as("node").select(all,"node").unfold()'
         // Variant depending on the Gremlin version
-        if (communication_method == "GraphSON3_4") { 
+        if (communication_method == "GraphSON3_4") {
         	// Version 3.4
             gremlin_query_nodes += ".valueMap().with(WithOptions.tokens)";
             gremlin_query_nodes += '.fold().inject(' + traversal_source + '.V(' + id + ').valueMap().with(WithOptions.tokens)).unfold()';
@@ -218,9 +218,9 @@ var graphioGremlin = (function(){
 			if (COMMUNICATION_PROTOCOL == 'REST'){
 				let server_url = ""
 				if(REST_USE_HTTPS){
-					server_url = "https://"+server_address+":"+server_port;
+					server_url = server_address;
 				} else{
-					server_url = "http://"+server_address+":"+server_port;
+					server_url = server_address;
 				}
 				run_ajax_request(gremlin_query,server_url,query_type,active_node,message,callback);
 			}
@@ -235,7 +235,7 @@ var graphioGremlin = (function(){
 			else {
 				console.log('Bad communication protocol. Check configuration file. Accept "REST" or "websocket" .')
 			}
-				
+
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ var graphioGremlin = (function(){
 	function run_ajax_request(gremlin_query,server_url,query_type,active_node,message, callback){
 		// while busy, show we're doing something in the messageArea.
 		$('#messageArea').html('<h3>(loading)</h3>');
-
+    console.log(gremlin_query);
 		// Get the data from the server
 		$.ajax({
 			type: "POST",
@@ -260,7 +260,7 @@ var graphioGremlin = (function(){
 							//console.log("Results received")
 							if(callback){
 								callback(Data);
-							} else {				
+							} else {
 								handle_server_answer(Data,query_type,active_node,message);
 							}
 			},
@@ -316,8 +316,9 @@ var graphioGremlin = (function(){
 		var data = JSON.stringify(msg);
 
 		var ws = new WebSocket(server_url);
+    //var ws = new WebSocket(server_url, {rejectUnauthorized: false});
 		ws.onopen = function (event){
-			ws.send(data,{ mask: true});	
+			ws.send(data,{ mask: true});
 		};
 		ws.onerror = function (err){
 			console.log('Connection error using websocket');
@@ -370,7 +371,7 @@ var graphioGremlin = (function(){
 			} else {
 				handle_server_answer(data,query_type,active_node,message);
 			}
-		};		
+		};
 	}
 
 	// Generate uuid for websocket requestId. Code found here:
@@ -423,7 +424,7 @@ var graphioGremlin = (function(){
 			//console.log(data);
 			var graph = arrange_data(data);
 			//console.log(graph)
-			if (query_type=='click') var center_f = 0; //center_f=0 mean no attraction to the center for the nodes 
+			if (query_type=='click') var center_f = 0; //center_f=0 mean no attraction to the center for the nodes
 			else if (query_type=='search') var center_f = 1;
 			else return;
 			graph_viz.refresh_data(graph,center_f,active_node);
@@ -461,7 +462,7 @@ var graphioGremlin = (function(){
 		if (list[i].id === elem) return i;
 	  }
 	  return null;
-	}  
+	}
 
 	/////////////////////////////////////////////////////////////
 	function arrange_datav2(data) {
@@ -524,7 +525,7 @@ var graphioGremlin = (function(){
         var prop_dic = {};
         // VERSION 3.4
         if (isGraphSON3_4) {
-           
+
             for (var key in data) {
                 if (data.hasOwnProperty(key) && key != 'id' && key != 'label' && key != 'type') prop_dic[key] = data[key];
             }
@@ -558,7 +559,7 @@ var graphioGremlin = (function(){
             // NOT VERSION 3.4
             prop_dic = data.properties;
 	        //console.log(prop_dic)
-	        for (var key2 in prop_dic) { 
+	        for (var key2 in prop_dic) {
 		        if (prop_dic.hasOwnProperty(key2)) {
 			        if (data.type == 'vertex'){// Extracting the Vertexproperties (properties of properties for vertices)
 				        var property2 = prop_dic[key2];
